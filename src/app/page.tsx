@@ -1,5 +1,3 @@
-import { db } from "./server/db";
-import { todoTable } from "./server/db/schema";
 import TodoList from "./components/TodoList";
 import TodoForm from "./components/TodoForm";
 import { Suspense } from "react";
