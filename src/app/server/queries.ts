@@ -1,8 +1,8 @@
 "use server";
 
-import { asc, between, count, eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "./db";
-import { InsertUser, SelectUser, todoTable } from "./db/schema";
+import { todoTable } from "./db/schema";
 import { revalidatePath } from "next/cache";
 
 export async function addTodo(
@@ -11,29 +11,30 @@ export async function addTodo(
 ) {
   const title = formData.get("title") as string;
   if (title.trim()) {
-    await db.insert(todoTable).values({ title: title.trim() });
+    await db
+      .insert(todoTable)
+      .values({ title: title.trim(), isActive: false, createdAt: new Date() });
     revalidatePath("/");
     return { success: true };
   }
   return { success: false };
 }
-// export async function toggleTodo(id: number, isActive: boolean) {
-//   await db
-//     .update(todoTable)
-//     .set({ isActive: true })
-//     .where(eq(todoTable.id, id));
-//   revalidatePath("/");
-// }
 
-// Fetch the current state from the database
 export async function toggleTodo(formData: FormData) {
   const id = parseInt(formData.get("id") as string);
-  const completed = formData.get("isActive") === "true";
+  const currentIsActive = formData.get("isActive") === "true";
+  const newIsActive = !currentIsActive;
+
+  console.log(
+    `Toggling todo ${id} from isActive: ${currentIsActive} to ${newIsActive}`
+  );
 
   await db
     .update(todoTable)
-    .set({ isActive: !completed })
+    .set({ isActive: newIsActive })
     .where(eq(todoTable.id, id));
+
+  console.log(`Todo ${id} updated. New isActive state: ${newIsActive}`);
 
   revalidatePath("/");
 }
@@ -41,5 +42,6 @@ export async function toggleTodo(formData: FormData) {
 export async function deleteTodo(formData: FormData) {
   const id = parseInt(formData.get("id") as string);
   await db.delete(todoTable).where(eq(todoTable.id, id));
+  console.log("deleted");
   revalidatePath("/");
 }
