@@ -5,15 +5,6 @@ import { db } from "./db";
 import { InsertUser, SelectUser, todoTable } from "./db/schema";
 import { revalidatePath } from "next/cache";
 
-//export async function addTodo(formData: FormData) {
-//   const title = formData.get("title") as string;
-//   if (title.trim()) {
-//     await db.insert(todoTable).values({ title });
-//     revalidatePath("/");
-//     return { success: true };
-//   }
-//   return { success: false };
-// }
 export async function addTodo(
   prevState: { success: boolean },
   formData: FormData
@@ -21,7 +12,7 @@ export async function addTodo(
   const title = formData.get("title") as string;
   if (title.trim()) {
     await db.insert(todoTable).values({ title: title.trim() });
-    revalidatePath("/todos");
+    revalidatePath("/");
     return { success: true };
   }
   return { success: false };
@@ -37,19 +28,14 @@ export async function addTodo(
 // Fetch the current state from the database
 export async function toggleTodo(formData: FormData) {
   const id = parseInt(formData.get("id") as string);
+  const completed = formData.get("isActive") === "true";
 
-  // Fetch the current state from the database
-  const todo = await db.select().from(todoTable).where(eq(todoTable.id, id));
+  await db
+    .update(todoTable)
+    .set({ isActive: !completed })
+    .where(eq(todoTable.id, id));
 
-  if (todo) {
-    // Toggle the completed status
-    await db
-      .update(todoTable)
-      .set({ isActive: !todoTable.isActive })
-      .where(eq(todoTable.id, id));
-
-    revalidatePath("/");
-  }
+  revalidatePath("/");
 }
 
 export async function deleteTodo(formData: FormData) {
