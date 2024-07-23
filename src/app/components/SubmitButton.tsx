@@ -20,11 +20,6 @@ export default function SubmitButton() {
       formAction={handleSubmit}
       disabled={pending}
       className="px-6 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50 disabled:opacity-50"
-      ref={(node) => {
-        if (node) {
-          formRef.current = node.closest("form");
-        }
-      }}
     >
       {pending ? "Adding..." : "Add Task"}
     </button>

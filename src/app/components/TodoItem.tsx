@@ -1,4 +1,3 @@
-import { isatty } from "tty";
 import { deleteTodo, toggleTodo } from "../server/queries";
 
 export default function TodoItem({
