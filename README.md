@@ -8,3 +8,8 @@
 - [x] Server-side data fetching
 - [x] Tailwind CSS for styling
 - [x] Revalidation
+
+- [] auth to show only contents that logged in user can see the content.
+
+- [] sentry for logging and error
+- [] adding image field into the table. Maybe card style displayed instead of the list of task column
