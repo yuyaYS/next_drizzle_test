@@ -1,17 +1,19 @@
+import { auth } from "@clerk/nextjs/server";
 import { db } from "../server/db";
-import { todoTable } from "../server/db/schema";
 import TodoItem from "./TodoItem";
-import { asc, desc } from "drizzle-orm";
 type todoItem = {
   id: number;
   title: string;
   isActive: boolean;
 };
 export default async function TodoList() {
-  const todoItems = await db
-    .select()
-    .from(todoTable)
-    .orderBy(desc(todoTable.createdAt));
+  const user = auth();
+  if (!user.userId) throw new Error("Unauthrized");
+
+  const todoItems = await db.query.todoTable.findMany({
+    where: (model, { eq }) => eq(model.userId, user.userId),
+    orderBy: (model, { desc }) => desc(model.id),
+  });
 
   return (
     <ul className="space-y-4">
